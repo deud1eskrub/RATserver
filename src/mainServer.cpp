@@ -194,8 +194,6 @@ int __cdecl main(void)
 					filePath2 = std::string(filePath2.c_str() + 1, filePath2.size() - 1);
 				};
 
-				std::cout << filePath1 << filePath2 << std::endl;
-
 				std::string command = "sendfile " + filePath2;
 
 
