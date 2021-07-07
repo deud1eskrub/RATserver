@@ -86,7 +86,7 @@ int __cdecl main(void)
 		std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
 		ctime_s(timeStr, 26, &time);	
 		char timeOnly[9];
-		std::memcpy(timeOnly, timeStr + 11, 9);
+		memcpy(timeOnly, timeStr + 11, 9);
 		timeOnly[8] = '\x00';
 
 		std::cout << timeOnly << "- >>> ";
