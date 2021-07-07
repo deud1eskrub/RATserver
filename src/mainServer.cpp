@@ -37,8 +37,8 @@ int __cdecl main(void)
 	std::cout << c._startText() << "\n\nEnter the local ip and port of the server, use format localaddr:socket." << std::endl;
 
 	outputColor(0x7);
-	char inputBuffer[MAX_BUF];
-	std:cin.get(inputBuffer, MAX_BUF);
+	char inputBuffer[1024];
+	std:cin.get(inputBuffer, 1024);
 	if (std::cin.rdstate() == 2)
 	{
 		return 1;
@@ -82,14 +82,7 @@ int __cdecl main(void)
 	while (1)
 	{
 
-		char timeStr[26];
-		std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-		ctime_s(timeStr, 26, &time);	
-		char timeOnly[9];
-		memcpy(timeOnly, timeStr + 11, 9);
-		timeOnly[8] = '\x00';
-
-		std::cout << timeOnly << "- >>> ";
+		std::cout << "- >>> ";
 		try
 		{
 			char inByteBuffer[512];
