@@ -17,6 +17,8 @@
 #include <sstream>
 #include <thread>
 #include <fstream>
+#include <chrono>
+#include <ctime>
 
 #define _DEBUG_
 #define Version MAKEWORD(2, 2)
@@ -37,6 +39,10 @@ int __cdecl main(void)
 	outputColor(0x7);
 	char inputBuffer[MAX_BUF];
 	std:cin.get(inputBuffer, MAX_BUF);
+	if (std::cin.rdstate() == 2)
+	{
+		return 1;
+	};
 	std::string inputBuffer_str = inputBuffer;
 
 	c.ipv4ADDR = inputBuffer_str.substr(0, inputBuffer_str.find(":"));
@@ -44,7 +50,7 @@ int __cdecl main(void)
 	newStream << inputBuffer_str.substr(inputBuffer_str.find(":") + 1);
 	newStream >> c.socketPort;
 
-	std::cin.ignore(std::numeric_limits <long long>::max(), '\n');
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	std::cout << std::endl << std::endl;
 
 	WSAData socketDataStructure;
@@ -75,13 +81,22 @@ int __cdecl main(void)
 	//-- Console Parser
 	while (1)
 	{
-		std::cout << ">>> ";
+
+		char timeStr[26];
+		std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+		ctime_s(timeStr, 26, &time);	
+		char timeOnly[9];
+		std::memcpy(timeOnly, timeStr + 11, 9);
+		timeOnly[8] = '\x00';
+
+		std::cout << timeOnly << "- >>> ";
 		try
 		{
 			char inByteBuffer[512];
 			zeroBuffer(inByteBuffer, 512);
 			std::cin.get(inByteBuffer, 512);
-
+			std::cin.clear();
+			std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
 			std::string stringBuffer = std::string(inByteBuffer, strlen(inByteBuffer));
 			std::stringstream stringStreamBuffer;
@@ -138,7 +153,6 @@ int __cdecl main(void)
 					outputColor(0xC);
 					std::cout << "There are no clients connected." << std::endl;
 					outputColor(0x7);
-					std::cin.ignore(std::numeric_limits<long long>::max(), '\n');
 					continue;
 				};
 				unsigned int clientId = c.allConnectedClients[c.activeClient].id;
@@ -160,7 +174,6 @@ int __cdecl main(void)
 					outputColor(0xC);
 					std::cout << "There are no clients connected." << std::endl;
 					outputColor(0x7);
-					std::cin.ignore(std::numeric_limits<long long>::max(), '\n');
 					continue;
 				};
 				unsigned int clientId = c.allConnectedClients[c.activeClient].id;
@@ -260,20 +273,17 @@ int __cdecl main(void)
 					"  -random_mouse; sets the current cursor position to random.\n"
 					<< endl;
 			};
-			std::cin.ignore(std::numeric_limits<long long>::max(), '\n');
 		}
 		catch (std::exception& e)
 		{
 			outputColor(0xC);
 			std::cout << "Error with the command." << std::endl;
 			outputColor(0x7);
-
-			std::cin.ignore(std::numeric_limits<long long>::max(), '\n');
 		};
 	};
 
 
-	std::cin.get();
+//	std::cin.get();
 
 	return 0;
 };
