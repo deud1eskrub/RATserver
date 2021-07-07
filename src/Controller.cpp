@@ -153,7 +153,10 @@ void __cdecl Controller::listenForClients(int listeningServerSocket, unsigned in
 
 		char nameInformation = getnameinfo((sockaddr*)&clientSocketAddress, sizeof(clientSocketAddress), computerName, NI_MAXHOST, serverPort, NI_MAXSERV, NULL);
 		inet_ntop(AF_INET, &clientSocketAddress.sin_addr, clientIp, NI_MAXHOST);
-
+		if (WSAGetLastError() == 10047) 
+		{
+			exit(1);
+		};
 		if (nameInformation == 0)
 		{
 
