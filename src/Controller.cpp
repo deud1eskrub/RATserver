@@ -161,29 +161,23 @@ void __cdecl Controller::listenForClients(int listeningServerSocket, unsigned in
 		{
 
 			outputColor(0xA);
-			std::cout << computerName << " has connected to port " << serverPort << ". IP: " << clientIp << std::endl;
-			outputColor(0x7);
-			std::cout << ">>> ";
 
-			char sendBuffer[MAX_BUF] = "Successfully connected to the server!";
-			sendInfoToClient(clientId, sendBuffer, MAX_BUF);
+			std::cout << "\n" << computerName << " has connected to port " << ntohs(clientSocketAddress.sin_port) << ". IP: " << clientIp << std::endl;
+			outputColor(0x7);
 
 			connectedClient newClient(computerName, clientIp, clientId);
 
 			_allConnectedClients->push_back(newClient);
 
 			_threads->push_back(std::thread(recvThings, newClient, _allConnectedClients));
+
+			std::cout << "->>> ";
 		}
 		else
 		{
 			outputColor(0xA);
-			std::cout << computerName << " has connected to port " << ntohs(clientSocketAddress.sin_port) << ". IP: " << clientIp << std::endl;
+			std::cout << computerName << " has connected to port" << ntohs(clientSocketAddress.sin_port) << ". IP: " << clientIp << std::endl;
 			outputColor(0x7);
-			std::cout << ">>> ";
-
-			char sendBuffer[MAX_BUF] = "Successfully connected to the server!";
-
-			sendInfoToClient(clientId, sendBuffer, MAX_BUF);
 		};
 	};
 };
