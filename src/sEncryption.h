@@ -45,7 +45,10 @@ std::vector<std::string> ParseStrings(char* bytes, unsigned int size, unsigned i
 			}
 			if (j >= criteria)
 			{
-				ret.push_back(std::string(bytes + i, j));
+				std::stringstream strStream;
+				strStream << std::hex << i;
+
+				ret.push_back(strStream.str() + std::string(": ") + std::string(bytes + i, j));
 				i += j;
 			}
 		}
@@ -58,25 +61,30 @@ std::vector<std::string> ParseStrings(char* bytes, unsigned int size, unsigned i
 
 int main(int argc, char**argv)
 {
-	//if (argc == 1)
-	//{
-	//	std::cout << "No input";
-	//	return 0;
-	//}
+	if (argc == 1)
+	{
+		std::cout << "No input\n";
+		return 1;
+	}
 
-	//int sensitivityCriteria;
-	//std::string blahblah = std::string(argv[2]);
-	//std::stringstream parser(blahblah);
-	//parser >> sensitivityCriteria;
+	int sensitivityCriteria;
+	std::string blahblah = std::string(argv[2]);
+	std::stringstream parser(blahblah);
+	parser >> sensitivityCriteria;
 	
 	char* bytes;
 	unsigned long long increment = 0, sizeOnDisk = 0;
 	//"C:\\Users\\Falcon\\Downloads\\X670EAORUSMASTER.F32a"
-	std::ifstream binary(/*argv[1]*/"C:\\Users\\Falcon\\Downloads\\X670EAORUSMASTER.F32a", std::ifstream::binary);
+	std::ifstream binary(argv[1], std::ifstream::binary);
+
 	binary.seekg(0, binary.end);
 	sizeOnDisk = binary.tellg();
-	std::cout << sizeOnDisk << std::endl;
 	binary.seekg(0, binary.beg);
+
+	if (!binary.good())
+	{
+		std::cout << "File has failed to open. Possible bad file path or lack of privilege.\n";
+	}
 
 	bytes = new char[sizeOnDisk];
 	memset(bytes, 0, sizeOnDisk);
@@ -87,7 +95,7 @@ int main(int argc, char**argv)
 		increment += 4096;
 	};
 
-	std::vector<std::string> strs = ParseStrings(bytes, sizeOnDisk, 6/*sensitivityCriteria*/);
+	std::vector<std::string> strs = ParseStrings(bytes, sizeOnDisk, sensitivityCriteria);
 	for(int i = 0; i < strs.size(); i++)
 	{
 		std::cout << strs[i] << "\n";
