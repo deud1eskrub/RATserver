@@ -2,104 +2,66 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <WS2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
+//--winapi
+#pragma comment(lib, "Advapi32.lib")
+#include <windows.h>
 
+//--C std library ported to c++
+#include <cstdlib>
+
+//--c++ std library
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <string>
+#include <sstream>
+#include <memory>
+#include <thread>
+#include <bit>
+#include <mutex>
+#include <cmath>
+#include <chrono>
+
+
+using namespace std;
 void __cdecl zeroBuffer(char*, int);
 
-constexpr unsigned int LOWER_lowerBound = 65;
-constexpr unsigned int LOWER_upperBound = 90;
-constexpr unsigned int CAPS_lowerBound = 97;
-constexpr unsigned int CAPS_upperBound = 122;
-constexpr unsigned int NUMS_lowerBound = 48;
-constexpr unsigned int NUMS_upperBound = 57;
-constexpr unsigned int SPACE = 32;
+typedef double(*f)(double);
 
-bool isValidChar(unsigned char byte)
+double derivative(f fn, double x, double dx=0.00000001)
 {
-	if ((byte >= LOWER_lowerBound && byte <= LOWER_upperBound) || (byte >= CAPS_lowerBound && byte <= CAPS_upperBound) || (byte >= NUMS_lowerBound && byte <= NUMS_upperBound) || byte==SPACE)
-	{
-		return true;
-	}
-	return false;
+	return (fn(x + dx) - fn(x)) / dx;
 }
-std::vector<std::string> ParseStrings(char* bytes, unsigned int size, unsigned int criteria)
+double integral(f fn, double from, double to, double dx = 0.000001)
 {
-	std::vector<std::string> ret;
-	unsigned int i, j, criteriaMatched;
-	
-	bool* mask = new bool[size];
-	memset(mask, 0, size);
-	for (i = 0; i < size; i++)
+	double sum = 0.0f;
+	for (double i = from; i <= to; i+=dx)
 	{
-		mask[i] = isValidChar(bytes[i]);
+		sum += fn(i)*dx;
 	}
-	for (i = 0; i < size; i++)
-	{
-		if (mask[i])
-		{
-			for (j = 0; i+j<=size; j++)
-			{
-				if (!mask[i + j])
-				{
-					break;
-				}
-			}
-			if (j >= criteria)
-			{
-				std::stringstream strStream;
-				strStream << std::hex << i;
-
-				ret.push_back(strStream.str() + std::string(": ") + std::string(bytes + i, j));
-				i += j;
-			}
-		}
-	}
-	delete[] mask;
-	return ret;
+	return sum;
 }
 
 
+double eff(double x)
+{
+	return 1/tan(x);
+}
 
 int main(int argc, char**argv)
 {
-	if (argc == 1)
-	{
-		std::cout << "No input\n";
-		return 1;
-	}
 
-	int sensitivityCriteria;
-	std::string blahblah = std::string(argv[2]);
-	std::stringstream parser(blahblah);
-	parser >> sensitivityCriteria;
 	
-	char* bytes;
-	unsigned long long increment = 0, sizeOnDisk = 0;
-	//"C:\\Users\\Falcon\\Downloads\\X670EAORUSMASTER.F32a"
-	std::ifstream binary(argv[1], std::ifstream::binary);
+	//printf("%f", derivative(eff, 0.3));
+	std::chrono::system_clock::time_point time = std::chrono::system_clock::now();
+	printf("%f\n", integral(eff, 0.1, 1));
+	std::chrono::system_clock::time_point time1 = std::chrono::system_clock::now();
+	std::cout << ((std::chrono::duration<double>)(time1 - time)).count() << std::endl;
+	return 0;
+}
 
-	binary.seekg(0, binary.end);
-	sizeOnDisk = binary.tellg();
-	binary.seekg(0, binary.beg);
-
-	if (!binary.good())
-	{
-		std::cout << "File has failed to open. Possible bad file path or lack of privilege.\n";
-	}
-
-	bytes = new char[sizeOnDisk];
-	memset(bytes, 0, sizeOnDisk);
-
-	while (binary.good())
-	{
-		binary.read(bytes + increment, 4096);
-		increment += 4096;
-	};
-
-	std::vector<std::string> strs = ParseStrings(bytes, sizeOnDisk, sensitivityCriteria);
-	for(int i = 0; i < strs.size(); i++)
-	{
-		std::cout << strs[i] << "\n";
-	}
 	
 	return 0;
 }
